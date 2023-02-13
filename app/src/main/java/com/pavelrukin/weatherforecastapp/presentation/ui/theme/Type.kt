@@ -1,4 +1,4 @@
-package com.pavelrukin.weatherforecastapp.ui.theme
+package com.pavelrukin.weatherforecastapp.presentation.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
