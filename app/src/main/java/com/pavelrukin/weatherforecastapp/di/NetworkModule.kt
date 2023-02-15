@@ -3,14 +3,16 @@ package com.pavelrukin.weatherforecastapp.di
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.pavelrukin.weatherforecastapp.data.network.api.WeatherApi
+import com.pavelrukin.weatherforecastapp.data.network.interceptors.ConnectivityInterceptor
 import com.pavelrukin.weatherforecastapp.data.network.interceptors.ResponseInterceptor
 import com.pavelrukin.weatherforecastapp.data.network.retrofit.RetrofitFactory
 import com.pavelrukin.weatherforecastapp.data.network.retrofit.RetrofitFactoryImpl
 import com.pavelrukin.weatherforecastapp.data.repository.WeatherRepositoryImpl
-import com.pavelrukin.weatherforecastapp.presentation.activities.MainViewModel
 import com.pavelrukin.weatherforecastapp.domain.repository.WeatherRepository
 import com.pavelrukin.weatherforecastapp.domain.usecase.GeocodingByNameUseCase
+import com.pavelrukin.weatherforecastapp.presentation.activities.MainViewModel
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -20,11 +22,16 @@ val dataModules = module {
 
     single { HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY) }
     single { ResponseInterceptor() }
+    single { ConnectivityInterceptor(context = androidContext()) }
 
     single<Gson> { GsonBuilder().setLenient().create() }
 
     single {
-        listOf(get<ResponseInterceptor>(), get<HttpLoggingInterceptor>())
+        listOf(
+            get<ResponseInterceptor>(),
+            get<HttpLoggingInterceptor>(),
+            get<ConnectivityInterceptor>()
+        )
     }
 
     single<RetrofitFactory> { RetrofitFactoryImpl(get()) }

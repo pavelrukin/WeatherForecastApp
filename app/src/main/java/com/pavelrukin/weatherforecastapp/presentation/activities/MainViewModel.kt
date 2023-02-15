@@ -17,13 +17,15 @@ class MainViewModel(private val geocodingByNameUseCase: GeocodingByNameUseCase) 
         //  geocodingByName("London")
     }
 
-    var state by mutableStateOf(GeocodingSate(emptyList()))
+    var geocodingSateList by mutableStateOf(GeocodingSate(emptyList()))
 
+/*
 
     private val _list: MutableState<List<GeocodingApiResponseItem>> =
         mutableStateOf(value = emptyList())
     val list: State<List<GeocodingApiResponseItem>> = _list
 
+*/
 
     private val _searchWidgetState: MutableState<SearchWidgetState> =
         mutableStateOf(value = SearchWidgetState.CLOSED)
@@ -40,26 +42,34 @@ class MainViewModel(private val geocodingByNameUseCase: GeocodingByNameUseCase) 
 
     fun updateSearchTextState(newValue: String) {
         _searchTextState.value = newValue
+        if (newValue.length<2){
+            geocodingSateList =  geocodingSateList.copy(
+               weatherInfo = null,
+               isLoading = false,
+               error = "Malo BUKV"
+           )
+        }
     }
 
     fun geocodingByName(name: String) = viewModelScope.launch(Dispatchers.IO) {
         Log.i(javaClass.simpleName, "MainViewModel geocodingByName: $name")
-        state = when (val result = geocodingByNameUseCase.getGeocodingByName(name = name)) {
-            is Resource.Error ->
-                state.copy(
-                    weatherInfo = emptyList(),
-                    isLoading = false,
-                    error = result.message
-                )
-            is Resource.Success ->
-                state.copy(
-                    weatherInfo = result.data,
-                    isLoading = false,
-                    error = null
-                )
+        if (name.length > 2) {
+            geocodingSateList = when (val result = geocodingByNameUseCase.getGeocodingByName(name = name)) {
+                is Resource.Error ->
+                    geocodingSateList.copy(
+                        weatherInfo = emptyList(),
+                        isLoading = false,
+                        error = result.message
+                    )
+                is Resource.Success ->
+                    geocodingSateList.copy(
+                        weatherInfo = result.data,
+                        isLoading = false,
+                        error = null
+                    )
 
+            }
         }
-
     }
 
 }

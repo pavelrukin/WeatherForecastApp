@@ -1,5 +1,6 @@
 package com.pavelrukin.weatherforecastapp.data.network.interceptors
 
+
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -21,3 +22,6 @@ class ResponseInterceptor : Interceptor {
         return chain.proceed(request)
     }
 }
+
+
+

@@ -8,9 +8,10 @@ data class GeocodingApiResponseItem(
     val lat: Double, // 50.4500336
     val lon: Double, // 30.5241361
     val country: String, // UA
-    val state: String? // Mykolaiv Oblast
+    var state: String?  // Mykolaiv Oblast
 )
-data class LocalName(val listLocalName:ArrayList<String>)
+
+data class LocalName(val listLocalName: ArrayList<String>)
 
 
 

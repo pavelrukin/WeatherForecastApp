@@ -55,14 +55,15 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(Color.DarkGray)
                     ) {
-                        MainScreen(viewModel = mainViewModel, arrayList,
+                        MainScreen(
+                            viewModel = mainViewModel,
                             onClick = {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "click ${it.name}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        })
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "click ${it.name}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            })
                         /*                 WeatherCard(
                                              state = viewModel.state,
                                              backgroundColor = DeepBlue
@@ -70,19 +71,21 @@ class MainActivity : ComponentActivity() {
                                          Spacer(modifier = Modifier.height(16.dp))
                                          WeatherForecast(state = viewModel.state)*/
                     }
-                    if (mainViewModel.state.isLoading) {
+                    if (mainViewModel.geocodingSateList.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center)
                         )
+                    } else {
+                        mainViewModel.geocodingSateList.error?.let { error ->
+                            Text(
+                                text = error,
+                                color = Color.Red,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
                     }
-                    mainViewModel.state.error?.let { error ->
-                        Text(
-                            text = error,
-                            color = Color.Red,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+
                 }
 
 
