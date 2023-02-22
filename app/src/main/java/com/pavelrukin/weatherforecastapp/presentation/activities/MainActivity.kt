@@ -1,9 +1,12 @@
 package com.pavelrukin.weatherforecastapp.presentation.activities
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,32 +14,34 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.pavelrukin.weatherforecastapp.data.models.GeocodingApiResponseItem
-import com.pavelrukin.weatherforecastapp.data.models.LocalName
+import com.pavelrukin.weatherforecastapp.data.network.models.GeocodingDto
+import com.pavelrukin.weatherforecastapp.data.network.models.LocalName
 import com.pavelrukin.weatherforecastapp.presentation.ui.screens.MainScreen
 import com.pavelrukin.weatherforecastapp.presentation.ui.theme.WeatherForecastAppTheme
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val arrayList = arrayListOf<GeocodingApiResponseItem>(
-            GeocodingApiResponseItem(
+        val arrayList = arrayListOf<GeocodingDto>(
+            GeocodingDto(
                 name = "Lviv",
-                local_names = LocalName(listLocalName = arrayListOf()),
+                localName = LocalName(listLocalName = arrayListOf()),
                 lat = 0.0,
                 lon = 0.0,
                 country = "UA",
                 state = "UA",
             ),
-            GeocodingApiResponseItem(
+            GeocodingDto(
                 name = "London",
-                local_names = LocalName(listLocalName = arrayListOf()),
+                localName = LocalName(listLocalName = arrayListOf()),
                 lat = 0.0,
                 lon = 0.0,
                 country = "England",
@@ -45,7 +50,11 @@ class MainActivity : ComponentActivity() {
 
             )
         setContent {
-            val mainViewModel = koinViewModel<MainViewModel>()
+            val viewModel = koinViewModel<MainViewModel>()
+            val searchWidgetState by viewModel.searchWidgetState
+            val searchTextState by viewModel.searchTextState
+
+
             WeatherForecastAppTheme {
                 Box(
                     modifier = Modifier.fillMaxSize()
@@ -56,27 +65,27 @@ class MainActivity : ComponentActivity() {
                             .background(Color.DarkGray)
                     ) {
                         MainScreen(
-                            viewModel = mainViewModel,
+                            viewModel = viewModel,
                             onClick = {
+                                viewModel.getFiveDayWeatherForecast(it.lat,it.lon)
                                 Toast.makeText(
                                     this@MainActivity,
                                     "click ${it.name}",
-                                    Toast.LENGTH_SHORT
+                                    Toast.LENGTH_SHORT,
                                 ).show()
-                            })
-                        /*                 WeatherCard(
-                                             state = viewModel.state,
-                                             backgroundColor = DeepBlue
-                                         )
-                                         Spacer(modifier = Modifier.height(16.dp))
-                                         WeatherForecast(state = viewModel.state)*/
+                            },
+                            searchTextState = searchTextState,
+                            searchWidgetState = searchWidgetState ,
+
+                        )
+
                     }
-                    if (mainViewModel.geocodingSateList.isLoading) {
+                    if (viewModel.geocodingSateList.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center)
                         )
                     } else {
-                        mainViewModel.geocodingSateList.error?.let { error ->
+                        viewModel.geocodingSateList.error?.let { error ->
                             Text(
                                 text = error,
                                 color = Color.Red,
