@@ -10,7 +10,6 @@ import com.pavelrukin.weatherforecastapp.domain.usecase.GeocodingByNameUseCase
 import com.pavelrukin.weatherforecastapp.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.threeten.bp.format.DateTimeFormatter
 
 class MainViewModel(private val geocodingByNameUseCase: GeocodingByNameUseCase) : ViewModel() {
 
@@ -22,6 +21,8 @@ class MainViewModel(private val geocodingByNameUseCase: GeocodingByNameUseCase) 
 
     var geocodingSateList by mutableStateOf(GeocodingSate(emptyList()))
     var weatherState by mutableStateOf(WeatherState())
+    var visibilityGeocodingSateList by mutableStateOf(false)
+    var visibilityCityText by mutableStateOf(false)
 
 
     private val _searchWidgetState: MutableState<SearchWidgetState> =
@@ -56,18 +57,24 @@ class MainViewModel(private val geocodingByNameUseCase: GeocodingByNameUseCase) 
             geocodingSateList =
                 when (val result = geocodingByNameUseCase.getGeocodingByName(name = name)) {
 
-                    is Resource.Error ->
+                    is Resource.Error -> {
+                        visibilityCityText = false
+                        visibilityGeocodingSateList = false
                         geocodingSateList.copy(
                             weatherInfo = emptyList(),
                             isLoading = false,
                             error = result.message
                         )
-                    is Resource.Success ->
+                    }
+                    is Resource.Success -> {
+                        visibilityCityText = false
+                        visibilityGeocodingSateList = true
                         geocodingSateList.copy(
                             weatherInfo = result.data,
                             isLoading = false,
                             error = null
                         )
+                    }
 
                 }
         }
@@ -78,19 +85,18 @@ class MainViewModel(private val geocodingByNameUseCase: GeocodingByNameUseCase) 
             Log.d(javaClass.simpleName, "getFiveDayWeatherForecast: ")
             weatherState =
                 when (val result = geocodingByNameUseCase.getFiveDayWeatherForecast(lat, lon)) {
-                    is Resource.Error -> weatherState.copy(
-                        weatherInfo = null,
-                        isLoading = false,
-                        error = result.message
-                    )
+                    is Resource.Error -> {
+                        visibilityCityText = false
+                        visibilityGeocodingSateList = false
+                        weatherState.copy(
+                            weatherInfo = null,
+                            isLoading = false,
+                            error = result.message
+                        )
+                    }
                     is Resource.Success -> {
-                        result.data?.weatherList?.forEach {
-                            Log.d(javaClass.simpleName, "${ it.dateTime.format(
-                                DateTimeFormatter.ofPattern("HH:mm")
-                            )}: ")
-
-                        }
-
+                        visibilityCityText = true
+                        visibilityGeocodingSateList = false
                         weatherState.copy(
                             weatherInfo = result.data,
                             isLoading = false,
@@ -106,8 +112,9 @@ class MainViewModel(private val geocodingByNameUseCase: GeocodingByNameUseCase) 
 data class GeocodingSate(
     val weatherInfo: List<GeocodingDto>?,
     val isLoading: Boolean = false,
-    val error: String? = null
-)
+    val error: String? = null,
+
+    )
 
 data class WeatherState(
     val weatherInfo: Weather? = null,

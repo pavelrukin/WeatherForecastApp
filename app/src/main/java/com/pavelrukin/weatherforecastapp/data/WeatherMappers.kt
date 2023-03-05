@@ -5,13 +5,15 @@ import android.util.Log
 import com.pavelrukin.weatherforecastapp.data.network.models.WeatherDtoResponse
 import com.pavelrukin.weatherforecastapp.domain.weather.WeatherType
 import org.threeten.bp.Instant
+import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneOffset
+import java.util.*
 
 
 data class Weather(
     val city: City,
-    val weatherList: List<WeatherData>
+    val weatherList: Map<LocalDate, List<WeatherData>>
 )
 
 data class City(
@@ -65,7 +67,9 @@ fun WeatherDtoResponse.mapToWeather(): Weather {
                     )
                 }
             )
-        }
+        }.groupBy {  it.dateTime.toLocalDate() }
+
     )
 
 }
+

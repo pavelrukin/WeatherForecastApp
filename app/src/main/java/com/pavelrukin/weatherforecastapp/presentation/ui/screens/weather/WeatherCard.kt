@@ -21,12 +21,10 @@ import org.threeten.bp.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherCard(
-  /*  state: WeatherState,*/
     backgroundColor: Color,
     modifier: Modifier = Modifier,
     data :WeatherData
 ) {
- //   state.weatherInfo?.let { data ->
 
         Card(
             backgroundColor = backgroundColor,
@@ -40,25 +38,22 @@ fun WeatherCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Today ${
-                        data.dateTime.format(
-                            DateTimeFormatter.ofPattern("MM-dd hh:mm")
-                        )
-                    }",
+                    text = data.dateTime.format(DateTimeFormatter.ofPattern("MM-dd HH:mm")
+                    ),
                     modifier = Modifier.align(Alignment.End),
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Log.d(javaClass.simpleName, "WeatherCard: ${data.weatherConditions.id.iconRes}")
+
                 Image(
                     painter = painterResource(id = data.weatherConditions.id.iconRes),
                     contentDescription = null,
-                    modifier = Modifier.width(200.dp)
+                    modifier = Modifier.width(30.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                Text(
                     text = "${data.temperature}°C",
-                    fontSize = 50.sp,
+                    fontSize = 20.sp,
                     color = Color.White
                 )
                Spacer(modifier = Modifier.height(16.dp))
@@ -67,7 +62,7 @@ fun WeatherCard(
                     fontSize = 20.sp,
                     color = Color.White
                 )*/
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround

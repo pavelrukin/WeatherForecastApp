@@ -2,7 +2,6 @@ package com.pavelrukin.weatherforecastapp.presentation.activities
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +10,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -61,13 +62,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize()
                             .background(Color.DarkGray)
                     ) {
                         MainScreen(
                             viewModel = viewModel,
                             onClick = {
-                                viewModel.getFiveDayWeatherForecast(it.lat,it.lon)
+                                viewModel.getFiveDayWeatherForecast(it.lat, it.lon)
                                 Toast.makeText(
                                     this@MainActivity,
                                     "click ${it.name}",
@@ -75,9 +75,9 @@ class MainActivity : ComponentActivity() {
                                 ).show()
                             },
                             searchTextState = searchTextState,
-                            searchWidgetState = searchWidgetState ,
+                            searchWidgetState = searchWidgetState,
 
-                        )
+                            )
 
                     }
                     if (viewModel.geocodingSateList.isLoading) {
